@@ -6,17 +6,18 @@ import android.os.Bundle
 import com.example.trungnguyen.hackathonproject.R
 import android.content.Context
 import android.view.View
-import android.widget.Button
-//import android.os.SystemClock
-//import android.app.AlarmManager
-//import android.app.PendingIntent
-//import com.example.trungnguyen.hackathonproject.receiver.RestartServiceReceiver
 import com.example.trungnguyen.hackathonproject.service.NotifyService
 import android.text.TextUtils
-import android.provider.Settings.SettingNotFoundException
 import android.os.Build
 import android.provider.Settings
 import android.support.v7.app.AlertDialog
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.EditText
+import android.widget.TextView
+import com.example.trungnguyen.hackathonproject.helper.ConstHelper
+import com.example.trungnguyen.hackathonproject.helper.PreferenceUtil
+import com.example.trungnguyen.hackathonproject.helper.UtilHelper
 
 
 /**
@@ -25,15 +26,68 @@ import android.support.v7.app.AlertDialog
  */
 
 class LaunchActivity : AppCompatActivity(), View.OnClickListener {
+
+    private val mPatientList = ArrayList<String>()
+
     override fun onClick(view: View?) {
-        if (view?.id == R.id.bt_nearest) {
-            checkForNearestHospital()
+        when (view?.id) {
+            R.id.txt_nearby_hospital -> checkForNearestHospital()
+            R.id.txt_follow -> buildAlertFollowMsg()
+            R.id.txt_current -> {
+                if (mPatientList.size == 0) {
+                    UtilHelper.showToast("Chưa có người bệnh cần theo dỗi")
+                    buildAddPatientDialog()
+                    return
+                }
+                startActivity(Intent(this, PatientDialog::class.java)
+                        .putStringArrayListExtra(ConstHelper.PATIENT_LIST, mPatientList))
+            }
         }
+    }
+
+    private fun buildAddPatientDialog() {
+        val alert = AlertDialog.Builder(this)
+        alert.setTitle("Thêm ID bệnh nhân")
+        alert.setMessage("Vui lòng nhập ID bệnh nhân đã đc cung cấp")
+
+        val input = EditText(this)
+        alert.setView(input)
+
+        alert.setPositiveButton("OK", { _, _ ->
+            val patientId = input.text.toString()
+            if (!patientId.isEmpty()) {
+                mPatientList.add(patientId)
+                UtilHelper.showToast("Nhập thành công")
+                PreferenceUtil.saveListPatient(this, mPatientList)
+            } else UtilHelper.showToast("Nhập ID")
+        })
+
+        alert.setNegativeButton("CANCEL", { dialog, _ ->
+            dialog.dismiss()
+        })
+
+        alert.show()
+    }
+
+    private fun buildAlertFollowMsg() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Thông báo")
+                .setMessage("Thiết bị của bạn sẻ đc thông báo khi tình trạng sức khỏe " +
+                        "của ng bệnh ở mức nhất định, cần có internet để thông tin luôn cập nhật")
+                .setCancelable(false)
+                .setPositiveButton("Đồng ý", { _, _ ->
+                    startService(Intent(this, NotifyService::class.java))
+                })
+                .setNegativeButton("Hủy", { dialog, _ -> dialog.dismiss() })
+        val alert = builder.create()
+        alert.show()
     }
 
     private fun checkForNearestHospital() {
         if (isLocationEnabled(this)) {
-
+            startActivity(Intent(this, MapsActivity::class.java)
+                    .putExtra(ConstHelper.LONGITUDE, 106.668)
+                    .putExtra(ConstHelper.LATITUDE, 11.0512))
         } else buildAlertMessageNoGps()
     }
 
@@ -55,34 +109,46 @@ class LaunchActivity : AppCompatActivity(), View.OnClickListener {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             try {
                 locationMode = Settings.Secure.getInt(context.contentResolver, Settings.Secure.LOCATION_MODE)
-            } catch (ignored: SettingNotFoundException) {
+            } catch (ignored: Exception) {
                 return false
             }
             return locationMode != Settings.Secure.LOCATION_MODE_OFF
 
         } else {
-            locationProviders = Settings.Secure.getString(context.contentResolver, Settings.Secure.LOCATION_PROVIDERS_ALLOWED)
+            locationProviders = Settings.Secure.getString(context.contentResolver,
+                    Settings.Secure.LOCATION_PROVIDERS_ALLOWED)
             return !TextUtils.isEmpty(locationProviders)
         }
-
-
     }
-
-//    private lateinit var mContext: Context
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_launch)
-//        mContext = this
-//        val alarm = Intent(this.mContext, RestartServiceReceiver::class.java)
-//        val alarmRunning = PendingIntent.getBroadcast(this.mContext, 0, alarm, PendingIntent.FLAG_NO_CREATE) != null
-//        if (!alarmRunning) {
-//            val pendingIntent = PendingIntent.getBroadcast(this.mContext, 0, alarm, 0)
-//            val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-//            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 10000, pendingIntent)
-//        }
-        findViewById<Button>(R.id.bt_nearest).setOnClickListener(this)
-        val msgIntent = Intent(this, NotifyService::class.java)
-        startService(msgIntent)
+        initViews()
+        val tempSet = PreferenceUtil.getListPatient(this)
+        if (tempSet.isNotEmpty())
+            PreferenceUtil.getListPatient(this).forEach { mPatientList.add(it) }
+    }
+
+    private fun initViews() {
+        setClickListener(R.id.txt_nearby_hospital)
+        setClickListener(R.id.txt_current)
+        setClickListener(R.id.txt_follow)
+    }
+
+    private fun setClickListener(txtId: Int) {
+        findViewById<TextView>(txtId).setOnClickListener(this)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.launch_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_add_patient -> buildAddPatientDialog()
+        }
+        return false
     }
 }

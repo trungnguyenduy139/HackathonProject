@@ -54,7 +54,7 @@ class NotificationService : Service(), ApiHelper.ApiCallback {
 
     private val mBackgroundTask = Runnable {
         try {
-            mApiHelper.getDataProcess()
+//            mApiHelper.getDataProcess()
         } catch (ignored: Exception) {
         }
     }

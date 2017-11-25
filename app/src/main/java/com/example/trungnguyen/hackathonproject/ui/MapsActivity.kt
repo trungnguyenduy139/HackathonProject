@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 
 import com.example.trungnguyen.hackathonproject.R
@@ -27,7 +26,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.example.trungnguyen.hackathonproject.helper.GetNearbyPlacesData
+import com.example.trungnguyen.hackathonproject.helper.GetNearbyTask
+import com.example.trungnguyen.hackathonproject.helper.UtilHelper
 
 /**
  * Author : Trung Nguyen
@@ -36,25 +36,24 @@ import com.example.trungnguyen.hackathonproject.helper.GetNearbyPlacesData
 
 class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
-    private var mMap: GoogleMap? = null
+    private lateinit var mMap: GoogleMap
     private var mClient: GoogleApiClient? = null
     private var mRequest: LocationRequest? = null
     private var mLastLocation: Location? = null
     private var mCurrentMarker: Marker? = null
-    private var mLatitude = 11.0512
-    private var mLongitude = 106.668
+    private var mLatitude = 0.0
+    private var mLongitude = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             checkLocationPermission()
-        }
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
-                .findFragmentById(R.id.map) as SupportMapFragment
+                .findFragmentById(R.id.mapFrag) as SupportMapFragment
         mapFragment.getMapAsync(this)
+        mLatitude = intent.getDoubleExtra(ConstHelper.LATITUDE, 0.0)
+        mLongitude = intent.getDoubleExtra(ConstHelper.LONGITUDE, 0.0)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -64,28 +63,27 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
                     if (mClient == null) {
                         buildGoogleApiClient()
                     }
-                    mMap!!.isMyLocationEnabled = true
+                    mMap.isMyLocationEnabled = true
                 }
             } else {
-                Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show()
+                UtilHelper.showToast("Permission denied")
             }
         }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             buildGoogleApiClient()
-            mMap!!.isMyLocationEnabled = true
+            mMap.isMyLocationEnabled = true
         }
+        showMapResult()
     }
 
 
     @Synchronized private fun buildGoogleApiClient() {
         mClient = GoogleApiClient.Builder(this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build()
         mClient!!.connect()
-
     }
 
     override fun onLocationChanged(location: Location) {
@@ -103,32 +101,47 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
         markerOptions.position(latLng)
         markerOptions.title("Current Location")
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-        mCurrentMarker = mMap!!.addMarker(markerOptions)
-        mMap!!.moveCamera(CameraUpdateFactory.newLatLng(latLng))
-        mMap!!.animateCamera(CameraUpdateFactory.zoomBy(10f))
+        mCurrentMarker = mMap.addMarker(markerOptions)
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+        mMap.animateCamera(CameraUpdateFactory.zoomBy(10f))
 
         if (mClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mClient, this)
         }
     }
 
-    fun onClick(v: View) {
-        val dataTransfer = arrayOfNulls<Any>(2)
-        val getNearbyPlacesData = GetNearbyPlacesData()
-
-        when (v.id) {
-            R.id.bt_hopistals -> {
-                mMap!!.clear()
-                val url = getUrl(mLatitude, mLongitude, ConstHelper.HOSPITAL)
-                dataTransfer[0] = mMap
-                dataTransfer[1] = url
-                getNearbyPlacesData.execute(*dataTransfer)
-                Toast.makeText(this@MapsActivity, "Đang tìm những bệnh viện gần nhất", Toast.LENGTH_SHORT).show()
-            }
+    private fun showMapResult() {
+        if (mLatitude == 0.0 || mLongitude == 0.0) {
+            UtilHelper.showToast("Tọa độ không hợp lệ")
+            return
         }
+        val dataTransfer = arrayOfNulls<Any>(2)
+        val getNearbyPlacesData = GetNearbyTask()
+        mMap.clear()
+        val url = getApiUrl(mLatitude, mLongitude, ConstHelper.HOSPITAL)
+        dataTransfer[0] = mMap
+        dataTransfer[1] = url
+        getNearbyPlacesData.execute(*dataTransfer)
+        UtilHelper.showToast("Đang tìm những bệnh viện gần nhất")
     }
 
-    private fun getUrl(latitude: Double, longitude: Double, nearbyPlace: String): String {
+//    fun onClick(view: View) {
+//        val dataTransfer = arrayOfNulls<Any>(2)
+//        val getNearbyPlacesData = GetNearbyTask()
+//
+//        when (view.id) {
+//            R.id.bt_hopistals -> {
+//                mMap?.clear()
+//                val url = getUrl(mLatitude, mLongitude, ConstHelper.HOSPITAL)
+//                dataTransfer[0] = mMap
+//                dataTransfer[1] = url
+//                getNearbyPlacesData.execute(*dataTransfer)
+//                Toast.makeText(this@MapsActivity, "Đang tìm những bệnh viện gần nhất", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//    }
+
+    private fun getApiUrl(latitude: Double, longitude: Double, nearbyPlace: String): String {
         val googlePlaceUrl = StringBuilder(ConstHelper.MAP_API_URL)
                 .append("location=$latitude,$longitude")
                 .append("&radius=" + ConstHelper.REQUEST_RADIUS)
@@ -140,9 +153,9 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
 
     override fun onConnected(bundle: Bundle?) {
         mRequest = LocationRequest()
-        mRequest!!.interval = 100
-        mRequest!!.fastestInterval = 1000
-        mRequest!!.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+        mRequest?.interval = 100
+        mRequest?.fastestInterval = 1000
+        mRequest?.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mClient, mRequest, this)
@@ -153,8 +166,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
         return if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION))
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_CODE)
-            else
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_CODE)
+            else ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_CODE)
             false
         } else
             true

@@ -10,7 +10,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 class HealthCareApi {
 
     companion object {
-        const val TEST_PATIENT_ID = "HK2"
         private var mImpHealthCareApi: ImpHealthCareApi? = null
         fun getService(url: String): ImpHealthCareApi {
             if (mImpHealthCareApi == null) {

@@ -28,16 +28,24 @@
         <activity android:name=".ui.MainActivity">
 
         </activity>
-        <activity android:name=".ui.LaunchActivity">
-
-        </activity>
-
-        <activity android:name=".ui.MapsActivity">
+        <activity android:name=".ui.LaunchActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.MapsActivity">
+
+        </activity>
+
+        <activity android:name=".ui.PatientDialog"
+            android:configChanges="orientation|keyboardHidden"
+            android:enabled="true"
+            android:label="Chọn bệnh nhân cần xem"
+            android:theme="@android:style/Theme.Holo.Light.Dialog">
         </activity>
 
         <service

@@ -19,7 +19,7 @@ import java.net.URL
  * Author : Trung Nguyen
  * Date : 11/25/2017
  */
-class GetNearbyPlacesData : AsyncTask<Any, String, String>() {
+class GetNearbyTask : AsyncTask<Any, String, String>() {
 
     private var mGooglePlacesData: String? = null
     private var mMap: GoogleMap? = null
@@ -36,10 +36,11 @@ class GetNearbyPlacesData : AsyncTask<Any, String, String>() {
                 dataBuilder.append(line)
             }
             reader.close()
+            mGooglePlacesData = dataBuilder.toString()
         } catch (e: IOException) {
             e.printStackTrace()
+            mGooglePlacesData = "ERROR"
         }
-        mGooglePlacesData = dataBuilder.toString()
         return mGooglePlacesData!!
     }
 
@@ -48,6 +49,7 @@ class GetNearbyPlacesData : AsyncTask<Any, String, String>() {
         val parser = DataParser()
         nearbyPlaceList = parser.parse(s)
         Log.d("nearbyplacesdata", "called parse method")
+        if(nearbyPlaceList.isEmpty()) return
         showNearbyPlaces(nearbyPlaceList)
     }
 
@@ -66,9 +68,9 @@ class GetNearbyPlacesData : AsyncTask<Any, String, String>() {
             markerOptions.title(placeName + " : " + vicinity)
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
 
-            mMap!!.addMarker(markerOptions)
-            mMap!!.moveCamera(CameraUpdateFactory.newLatLng(latLng))
-            mMap!!.animateCamera(CameraUpdateFactory.zoomTo(10f))
+            mMap?.addMarker(markerOptions)
+            mMap?.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+            mMap?.animateCamera(CameraUpdateFactory.zoomTo(10f))
         }
     }
 }

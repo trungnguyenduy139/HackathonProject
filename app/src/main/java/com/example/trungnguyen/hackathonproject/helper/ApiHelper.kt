@@ -25,8 +25,9 @@ class ApiHelper(apiCallback: ApiCallback) {
         fun onFailed()
     }
 
-    fun getDataProcess() {
-        val patient = HealthCareApi.getService(URL).getData()
+    fun getDataProcess(url: String) {
+        val tempUrl = "?ID=$url"
+        val patient = HealthCareApi.getService(URL).getData(tempUrl)
         patient.enqueue(object : Callback<List<Patient>> {
             override fun onFailure(call: Call<List<Patient>>?, t: Throwable?) {
                 mCallback.onFailed()

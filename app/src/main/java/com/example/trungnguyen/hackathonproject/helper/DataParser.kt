@@ -63,6 +63,10 @@ class DataParser {
     }
 
     fun parse(jsonData: String): List<HashMap<String, String>> {
+        if (jsonData == "ERROR") {
+            UtilHelper.showToast("Lỗi kết nối")
+            return ArrayList<HashMap<String, String>>()
+        }
         var jsonArray: JSONArray? = null
         val jsonObject: JSONObject
         try {

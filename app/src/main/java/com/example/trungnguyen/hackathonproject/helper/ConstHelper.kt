@@ -12,4 +12,16 @@ object ConstHelper {
     const val MAP_API_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?"
 
     const val API_KEY = "AIzaSyBLEPBRfw7sMb73Mr88L91Jqh3tuE4mKsE"
+
+    const val PATIENT_ID = "patient_id"
+
+    const val LATITUDE = "latitude"
+
+    const val LONGITUDE = "longitude"
+
+    const val PATIENT_LIST = "patient_list"
+
+    const val APP_NAME = "app_name"
+
+    const val SAVE_LIST_PATIENT = "save_list"
 }

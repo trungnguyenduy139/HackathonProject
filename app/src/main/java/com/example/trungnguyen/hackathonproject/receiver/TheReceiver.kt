@@ -13,6 +13,7 @@ import com.example.trungnguyen.hackathonproject.R
 import com.example.trungnguyen.hackathonproject.base.App
 import com.example.trungnguyen.hackathonproject.bean.Patient
 import com.example.trungnguyen.hackathonproject.helper.ApiHelper
+import com.example.trungnguyen.hackathonproject.helper.UtilHelper
 import com.example.trungnguyen.hackathonproject.ui.LaunchActivity
 import retrofit2.Call
 import retrofit2.Response
@@ -34,13 +35,13 @@ class TheReceiver : BroadcastReceiver(), ApiHelper.ApiCallback {
     }
 
     override fun onFailed() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        UtilHelper.showToast("Xẩy ra lỗi truy cập dữ liệu")
     }
 
     private val mApiHelper = ApiHelper(this)
 
     override fun onReceive(context: Context?, p1: Intent?) {
-        Toast.makeText(context, " Success ", Toast.LENGTH_SHORT).show()
+        UtilHelper.showToast("Success")
         Log.d("Notification", "The Receiver Successful")
         try {
             mApiHelper.getDataByUserId()

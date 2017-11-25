@@ -3,12 +3,16 @@ package com.example.trungnguyen.hackathonproject.ui
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.widget.SwipeRefreshLayout
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import com.example.trungnguyen.hackathonproject.R
+import com.example.trungnguyen.hackathonproject.base.App
 import com.example.trungnguyen.hackathonproject.bean.Patient
 import com.example.trungnguyen.hackathonproject.helper.ApiHelper
+import com.example.trungnguyen.hackathonproject.helper.ConstHelper
 import com.example.trungnguyen.hackathonproject.helper.NetworkUtil
+import com.example.trungnguyen.hackathonproject.helper.UtilHelper
 import retrofit2.Call
 import retrofit2.Response
 
@@ -17,18 +21,32 @@ import retrofit2.Response
  * Date : 11/25/2017
  */
 
-class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, ApiHelper.ApiCallback {
+class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, ApiHelper.ApiCallback, View.OnClickListener {
+
+    override fun onClick(view: View?) {
+        when (view?.id) {
+            R.id.txt_refresh -> onRefresh()
+        }
+    }
 
     override fun onSuccess(call: Call<List<Patient>>?, response: Response<List<Patient>>?) {
+        mSwipeRefreshLayout.isRefreshing = false
         val data = response?.body()!![0]
+        txtPatient.text = data.ID
         txtTemperature.text = data.temperature
+        txtSPO2.text = data.SPO2
+        txtBeat.text = data.BEAT
+        txtState.text = data.state
     }
 
     override fun onFailed() {
+        mSwipeRefreshLayout.isRefreshing = false
+        UtilHelper.showToast("Xẩy ra lỗi truy cập dữ liệu")
     }
 
     override fun onRefresh() {
-
+        mSwipeRefreshLayout.isRefreshing = true
+        makeRequest()
     }
 
     private lateinit var txtTemperature: TextView
@@ -38,21 +56,23 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
     private lateinit var txtPatient: TextView
     private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
     private val mApiHelper = ApiHelper(this)
+    private lateinit var mId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initViews()
+        mId = intent.getStringExtra(ConstHelper.PATIENT_ID)
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (NetworkUtil.isNetworkAvailable) mApiHelper.getDataProcess()
-        else showToast("Kiểm tra kết nối mạng")
+    override fun onStart() {
+        super.onStart()
+        makeRequest()
     }
 
-    private fun showToast(msg: String) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    private fun makeRequest() {
+        if (NetworkUtil.isNetworkAvailable) mApiHelper.getDataProcess(mId)
+        else UtilHelper.showToast("Kiểm tra kết nối mạng")
     }
 
     private fun initViews() {
@@ -63,5 +83,6 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         txtPatient = findViewById(R.id.txtPatient)
         mSwipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
         mSwipeRefreshLayout.setOnRefreshListener(this)
+        findViewById<TextView>(R.id.txt_refresh).setOnClickListener(this)
     }
 }
