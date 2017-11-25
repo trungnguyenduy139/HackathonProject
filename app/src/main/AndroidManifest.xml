@@ -45,7 +45,6 @@
         <activity android:name=".ui.PatientDialog"
             android:configChanges="orientation|keyboardHidden"
             android:enabled="true"
-            android:label="Chọn bệnh nhân cần xem"
             android:theme="@android:style/Theme.Holo.Light.Dialog">
         </activity>
 

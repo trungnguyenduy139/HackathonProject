@@ -77,7 +77,6 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
         }
     }
 
-
     @Synchronized private fun buildGoogleApiClient() {
         mClient = GoogleApiClient.Builder(this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build()
         mClient!!.connect()

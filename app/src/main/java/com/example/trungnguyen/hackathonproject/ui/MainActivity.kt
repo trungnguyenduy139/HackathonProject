@@ -24,7 +24,7 @@ import retrofit2.Response
 
 class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, ApiHelper.ApiCallback, View.OnClickListener {
 
-    private var mPatient : Patient? = null
+    private var mPatient: Patient? = null
 
     override fun onClick(view: View?) {
         when (view?.id) {
@@ -104,10 +104,12 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_detail_patient -> if (mPatient != null) {
-                startActivity(Intent(this, MapsActivity::class.java)
-                        .putExtra(ConstHelper.LATITUDE, mPatient?.LAT?.toDouble())
-                        .putExtra(ConstHelper.LONGITUDE, mPatient?.LONG?.toDouble()))
-                } else UtilHelper.showToast("Chưa có dữ liệu bệnh nhân")
+                if (UtilHelper.isLocationEnabled(this)) {
+                    startActivity(Intent(this, MapsActivity::class.java)
+                            .putExtra(ConstHelper.LATITUDE, mPatient?.LAT?.toDouble())
+                            .putExtra(ConstHelper.LONGITUDE, mPatient?.LONG?.toDouble()))
+                } else UtilHelper.buildAlertMessageNoGps(this)
+            } else UtilHelper.showToast("Chưa có dữ liệu bệnh nhân")
         }
         return false
     }

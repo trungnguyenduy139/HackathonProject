@@ -4,17 +4,13 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import com.example.trungnguyen.hackathonproject.R
-import android.content.Context
 import android.view.View
 import com.example.trungnguyen.hackathonproject.service.NotifyService
-import android.text.TextUtils
-import android.os.Build
-import android.provider.Settings
 import android.support.v7.app.AlertDialog
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
-import android.widget.TextView
+import android.widget.LinearLayout
 import com.example.trungnguyen.hackathonproject.helper.ConstHelper
 import com.example.trungnguyen.hackathonproject.helper.PreferenceUtil
 import com.example.trungnguyen.hackathonproject.helper.UtilHelper
@@ -40,7 +36,16 @@ class LaunchActivity : AppCompatActivity(), View.OnClickListener {
                     return
                 }
                 startActivity(Intent(this, PatientDialog::class.java)
+                        .putExtra(ConstHelper.IS_WARNING, false)
                         .putStringArrayListExtra(ConstHelper.PATIENT_LIST, mPatientList))
+            }
+            R.id.txt_warning -> {
+                val set = PreferenceUtil.getLatestWarning(this)
+                val list = ArrayList<String>()
+                list.addAll(set)
+                startActivity(Intent(this, PatientDialog::class.java)
+                        .putStringArrayListExtra(ConstHelper.PATIENT_LIST, list)
+                        .putExtra(ConstHelper.IS_WARNING, true))
             }
         }
     }
@@ -84,41 +89,11 @@ class LaunchActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun checkForNearestHospital() {
-        if (isLocationEnabled(this)) {
+        if (UtilHelper.isLocationEnabled(this)) {
             startActivity(Intent(this, MapsActivity::class.java)
                     .putExtra(ConstHelper.LONGITUDE, 0.0)
                     .putExtra(ConstHelper.LATITUDE, 0.0))
-        } else buildAlertMessageNoGps()
-    }
-
-    private fun buildAlertMessageNoGps() {
-        val builder = AlertDialog.Builder(this)
-        builder.setMessage("GPS của thiết bị đã bị tắt, vui lòng mở lại!")
-                .setCancelable(false)
-                .setPositiveButton("Đồng ý", { _, _ ->
-                    startActivity(Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-                })
-                .setNegativeButton("Hủy", { dialog, _ -> dialog.dismiss() })
-        val alert = builder.create()
-        alert.show()
-    }
-
-    private fun isLocationEnabled(context: Context): Boolean {
-        val locationMode: Int
-        val locationProviders: String
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            try {
-                locationMode = Settings.Secure.getInt(context.contentResolver, Settings.Secure.LOCATION_MODE)
-            } catch (ignored: Exception) {
-                return false
-            }
-            return locationMode != Settings.Secure.LOCATION_MODE_OFF
-
-        } else {
-            locationProviders = Settings.Secure.getString(context.contentResolver,
-                    Settings.Secure.LOCATION_PROVIDERS_ALLOWED)
-            return !TextUtils.isEmpty(locationProviders)
-        }
+        } else UtilHelper.buildAlertMessageNoGps(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -134,10 +109,11 @@ class LaunchActivity : AppCompatActivity(), View.OnClickListener {
         setClickListener(R.id.txt_nearby_hospital)
         setClickListener(R.id.txt_current)
         setClickListener(R.id.txt_follow)
+        setClickListener(R.id.txt_warning)
     }
 
     private fun setClickListener(txtId: Int) {
-        findViewById<TextView>(txtId).setOnClickListener(this)
+        findViewById<LinearLayout>(txtId).setOnClickListener(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

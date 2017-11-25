@@ -26,4 +26,8 @@ object ConstHelper {
     const val SAVE_LIST_PATIENT = "save_list"
 
     const val PARSER_ERROR = "parser_error"
+
+    const val IS_WARNING = "is_warning"
+
+    const val NEAR_WARNING = "near_warning"
 }

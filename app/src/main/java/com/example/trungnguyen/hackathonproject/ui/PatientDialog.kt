@@ -17,6 +17,7 @@ import com.example.trungnguyen.hackathonproject.helper.ConstHelper
 class PatientDialog : Activity(), AdapterView.OnItemClickListener {
 
     private var mPatients: ArrayList<String>? = null
+    private var mIsWarning: Boolean? = null
 
     override fun onItemClick(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
         startDetailActivity(mPatients?.get(position)!!)
@@ -25,8 +26,15 @@ class PatientDialog : Activity(), AdapterView.OnItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.patient_chooser)
-        val listView = findViewById<ListView>(R.id.lvPatient)
         mPatients = intent.getStringArrayListExtra(ConstHelper.PATIENT_LIST)
+        mIsWarning = intent.getBooleanExtra(ConstHelper.IS_WARNING, false)
+        title = if (mIsWarning as Boolean) "Cảnh báo gần đây" else "Chọn bệnh nhân"
+        if (mPatients?.size == 1) {
+            startDetailActivity(mPatients?.get(0)!!)
+            finish()
+        }
+        if (mPatients?.size == 0) mPatients?.add("Chưa có thông tin")
+        val listView = findViewById<ListView>(R.id.lvPatient)
         val patientAdapter = ArrayAdapter<String>(this, R.layout.patient_item, mPatients)
         listView.adapter = patientAdapter
         listView.onItemClickListener = this

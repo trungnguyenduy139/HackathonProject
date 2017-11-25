@@ -26,5 +26,17 @@ class PreferenceUtil {
             val preferences = getSharedPreferenceUtil(context)
             return preferences.getStringSet(ConstHelper.SAVE_LIST_PATIENT, HashSet<String>())
         }
+
+        fun saveLatestWarning(context: Context, list: ArrayList<String>) {
+            val editor = getSharedPreferenceUtil(context).edit()
+            val set = HashSet<String>(list)
+            editor.putStringSet(ConstHelper.NEAR_WARNING, set)
+            editor.apply()
+        }
+
+        fun getLatestWarning(context: Context): Set<String> {
+            val preferences = getSharedPreferenceUtil(context)
+            return preferences.getStringSet(ConstHelper.NEAR_WARNING, HashSet<String>())
+        }
     }
 }

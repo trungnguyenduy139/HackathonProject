@@ -12,8 +12,10 @@ import com.example.trungnguyen.hackathonproject.R
 import com.example.trungnguyen.hackathonproject.base.App
 import com.example.trungnguyen.hackathonproject.bean.Patient
 import com.example.trungnguyen.hackathonproject.helper.ApiHelper
+import com.example.trungnguyen.hackathonproject.helper.ConstHelper
+import com.example.trungnguyen.hackathonproject.helper.PreferenceUtil
 import com.example.trungnguyen.hackathonproject.helper.UtilHelper
-import com.example.trungnguyen.hackathonproject.ui.LaunchActivity
+import com.example.trungnguyen.hackathonproject.ui.PatientDialog
 import retrofit2.Call
 import retrofit2.Response
 
@@ -24,13 +26,18 @@ import retrofit2.Response
  */
 class NotifyReceiver : BroadcastReceiver(), ApiHelper.ApiCallback {
 
+    private val mWarningPatients = ArrayList<String>()
+    private var mContext: Context? = null
+
     override fun onSuccess(call: Call<List<Patient>>?, response: Response<List<Patient>>?) {
         val data = response?.body()!!
-        var result = "Trạng thái:"
+        val resultBuilder = StringBuilder()
         data.forEach {
-            result += "$result Patient ${data.indexOf(it)}: ${it.LUNG_STATE}\n"
+            if (it.state == "0") mWarningPatients.add(it.ID)
+            resultBuilder.append(it.ID).append("\n")
         }
-        pushNotification(result)
+        PreferenceUtil.saveLatestWarning(mContext!!, mWarningPatients)
+        pushNotification("Cảnh báo: $resultBuilder")
     }
 
     override fun onFailed() {
@@ -40,6 +47,7 @@ class NotifyReceiver : BroadcastReceiver(), ApiHelper.ApiCallback {
     private val mApiHelper = ApiHelper(this)
 
     override fun onReceive(context: Context?, p1: Intent?) {
+        mContext = context
         UtilHelper.showToast("Success")
         Log.d("Notification", "The Receiver Successful")
         try {
@@ -52,8 +60,9 @@ class NotifyReceiver : BroadcastReceiver(), ApiHelper.ApiCallback {
         val context = App.instance?.applicationContext
         val intentFilter = IntentFilter()
         intentFilter.addAction("RSSPullService")
-        val notificationIntent = Intent(context, LaunchActivity::class.java)
+        val notificationIntent = Intent(context, PatientDialog::class.java)
         notificationIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        notificationIntent.putExtra(ConstHelper.PATIENT_LIST, mWarningPatients).putExtra(ConstHelper.IS_WARNING, true)
         val pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val notifyBuilder = Notification.Builder(App.instance?.applicationContext)
