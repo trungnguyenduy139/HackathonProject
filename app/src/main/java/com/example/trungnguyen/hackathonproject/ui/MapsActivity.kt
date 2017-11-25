@@ -8,8 +8,6 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.app.FragmentActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
-import android.util.Log
-import android.widget.Toast
 
 import com.example.trungnguyen.hackathonproject.R
 import com.example.trungnguyen.hackathonproject.helper.ConstHelper
@@ -47,13 +45,13 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
+        mLatitude = intent.getDoubleExtra(ConstHelper.LATITUDE, 0.0)
+        mLongitude = intent.getDoubleExtra(ConstHelper.LONGITUDE, 0.0)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             checkLocationPermission()
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.mapFrag) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        mLatitude = intent.getDoubleExtra(ConstHelper.LATITUDE, 0.0)
-        mLongitude = intent.getDoubleExtra(ConstHelper.LONGITUDE, 0.0)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -77,7 +75,6 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
             buildGoogleApiClient()
             mMap.isMyLocationEnabled = true
         }
-        showMapResult()
     }
 
 
@@ -88,14 +85,15 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
 
     override fun onLocationChanged(location: Location) {
 
-        mLatitude = location.latitude
-        mLongitude = location.longitude
+        if (mLongitude == 0.0 || mLatitude == 0.0) {
+            mLatitude = location.latitude
+            mLongitude = location.longitude
+        }
         mLastLocation = location
         if (mCurrentMarker != null) {
-            mCurrentMarker!!.remove()
+            mCurrentMarker?.remove()
 
         }
-        Log.d("lat = ", "" + mLatitude)
         val latLng = LatLng(location.latitude, location.longitude)
         val markerOptions = MarkerOptions()
         markerOptions.position(latLng)
@@ -108,6 +106,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
         if (mClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mClient, this)
         }
+        showMapResult()
     }
 
     private fun showMapResult() {
@@ -124,22 +123,6 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
         getNearbyPlacesData.execute(*dataTransfer)
         UtilHelper.showToast("Đang tìm những bệnh viện gần nhất")
     }
-
-//    fun onClick(view: View) {
-//        val dataTransfer = arrayOfNulls<Any>(2)
-//        val getNearbyPlacesData = GetNearbyTask()
-//
-//        when (view.id) {
-//            R.id.bt_hopistals -> {
-//                mMap?.clear()
-//                val url = getUrl(mLatitude, mLongitude, ConstHelper.HOSPITAL)
-//                dataTransfer[0] = mMap
-//                dataTransfer[1] = url
-//                getNearbyPlacesData.execute(*dataTransfer)
-//                Toast.makeText(this@MapsActivity, "Đang tìm những bệnh viện gần nhất", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-//    }
 
     private fun getApiUrl(latitude: Double, longitude: Double, nearbyPlace: String): String {
         val googlePlaceUrl = StringBuilder(ConstHelper.MAP_API_URL)

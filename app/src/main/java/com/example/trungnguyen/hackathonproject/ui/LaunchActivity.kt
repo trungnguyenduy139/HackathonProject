@@ -86,8 +86,8 @@ class LaunchActivity : AppCompatActivity(), View.OnClickListener {
     private fun checkForNearestHospital() {
         if (isLocationEnabled(this)) {
             startActivity(Intent(this, MapsActivity::class.java)
-                    .putExtra(ConstHelper.LONGITUDE, 106.668)
-                    .putExtra(ConstHelper.LATITUDE, 11.0512))
+                    .putExtra(ConstHelper.LONGITUDE, 0.0)
+                    .putExtra(ConstHelper.LATITUDE, 0.0))
         } else buildAlertMessageNoGps()
     }
 

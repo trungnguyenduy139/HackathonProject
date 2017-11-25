@@ -8,7 +8,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.IntentFilter
 import android.util.Log
-import android.widget.Toast
 import com.example.trungnguyen.hackathonproject.R
 import com.example.trungnguyen.hackathonproject.base.App
 import com.example.trungnguyen.hackathonproject.bean.Patient
@@ -23,7 +22,7 @@ import retrofit2.Response
  * Author : Trung Nguyen
  * Date : 11/25/2017
  */
-class TheReceiver : BroadcastReceiver(), ApiHelper.ApiCallback {
+class NotifyReceiver : BroadcastReceiver(), ApiHelper.ApiCallback {
 
     override fun onSuccess(call: Call<List<Patient>>?, response: Response<List<Patient>>?) {
         val data = response?.body()!!

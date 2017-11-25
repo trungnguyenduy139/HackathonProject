@@ -39,7 +39,7 @@
 
                 <LinearLayout
                     android:layout_width="80dp"
-                    android:layout_height="160dp"
+                    android:layout_height="100dp"
                     android:layout_marginEnd="5dp"
                     android:layout_weight="1"
                     android:gravity="center"
@@ -67,7 +67,7 @@
 
                 <LinearLayout
                     android:layout_width="80dp"
-                    android:layout_height="160dp"
+                    android:layout_height="100dp"
                     android:layout_marginStart="5dp"
                     android:layout_weight="1"
                     android:gravity="center"
@@ -97,14 +97,14 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:orientation="horizontal"
                 android:weightSum="2"
                 android:baselineAligned="false">
 
                 <LinearLayout
                     android:layout_width="80dp"
-                    android:layout_height="160dp"
+                    android:layout_height="100dp"
                     android:layout_marginEnd="5dp"
                     android:layout_weight="1"
                     android:gravity="center"
@@ -133,7 +133,7 @@
                 <LinearLayout
                     android:layout_marginStart="5dp"
                     android:layout_width="80dp"
-                    android:layout_height="160dp"
+                    android:layout_height="100dp"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:orientation="vertical"
@@ -159,10 +159,75 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:baselineAligned="false">
+
+                <LinearLayout
+                    android:layout_width="80dp"
+                    android:layout_height="100dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed"
+                        android:text="Heart State"
+                        android:textColor="#BDBDBD"
+                        android:textSize="24sp" />
+
+                    <TextView
+                        android:id="@+id/txtHeartState"
+                        android:layout_marginTop="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-light"
+                        android:text="..."
+                        android:textColor="#fff"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginStart="5dp"
+                    android:layout_width="80dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed"
+                        android:text="Lung State"
+                        android:textColor="#BDBDBD"
+                        android:textSize="24sp" />
+
+                    <TextView
+                        android:id="@+id/txtLungState"
+                        android:layout_marginTop="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-light"
+                        android:text="..."
+                        android:textColor="#fff"
+                        android:textSize="16sp" />
+                </LinearLayout>
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/txt_refresh"
                 android:padding="10dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="50dp"
                 android:textColor="#fff"
                 android:background="@drawable/fresh_bg"
                 android:fontFamily="sans-serif-light"

@@ -50,10 +50,9 @@ class DataParser {
         val count = jsonArray!!.length()
         val placeList = ArrayList<HashMap<String, String>>()
         var placeMap: HashMap<String, String>?
-
-        for (i in 0 until count) {
+        for (index in 0 until count) {
             try {
-                placeMap = getPlace(jsonArray.get(i) as JSONObject)
+                placeMap = getPlace(jsonArray.get(index) as JSONObject)
                 placeList.add(placeMap)
             } catch (e: JSONException) {
                 e.printStackTrace()
@@ -63,7 +62,7 @@ class DataParser {
     }
 
     fun parse(jsonData: String): List<HashMap<String, String>> {
-        if (jsonData == "ERROR") {
+        if (jsonData == ConstHelper.PARSER_ERROR) {
             UtilHelper.showToast("Lỗi kết nối")
             return ArrayList<HashMap<String, String>>()
         }

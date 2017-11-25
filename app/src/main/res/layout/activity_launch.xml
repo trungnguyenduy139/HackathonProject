@@ -11,7 +11,7 @@
         android:id="@+id/txt_current"
         android:layout_weight="3"
         android:textColor="#fff"
-        android:text="Xem tình hình sức khỏe hiện tạo"
+        android:text="Xem tình hình sức khỏe hiện tại"
         android:textSize="24sp"
         android:background="@android:color/holo_red_dark"
         android:fontFamily="sans-serif-condensed"

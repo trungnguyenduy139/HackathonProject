@@ -1,8 +1,6 @@
 package com.example.trungnguyen.hackathonproject.helper
 
 import android.os.AsyncTask
-import android.util.Log
-
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -39,7 +37,7 @@ class GetNearbyTask : AsyncTask<Any, String, String>() {
             mGooglePlacesData = dataBuilder.toString()
         } catch (e: IOException) {
             e.printStackTrace()
-            mGooglePlacesData = "ERROR"
+            mGooglePlacesData = ConstHelper.PARSER_ERROR
         }
         return mGooglePlacesData!!
     }
@@ -48,7 +46,6 @@ class GetNearbyTask : AsyncTask<Any, String, String>() {
         val nearbyPlaceList: List<HashMap<String, String>>
         val parser = DataParser()
         nearbyPlaceList = parser.parse(s)
-        Log.d("nearbyplacesdata", "called parse method")
         if(nearbyPlaceList.isEmpty()) return
         showNearbyPlaces(nearbyPlaceList)
     }

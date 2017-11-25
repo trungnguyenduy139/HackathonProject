@@ -25,7 +25,8 @@
             android:value="AIzaSyBBmt5nbG6EuJVKJOtRM-anymSdg3OPr1o" />
 
 
-        <activity android:name=".ui.MainActivity">
+        <activity android:name=".ui.MainActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
 
         </activity>
         <activity android:name=".ui.LaunchActivity"
@@ -58,7 +59,7 @@
             android:exported="false" />
 
         <receiver
-            android:name=".receiver.TheReceiver"
+            android:name=".receiver.NotifyReceiver"
             android:enabled="true"
             android:exported="true"
             android:process=":project" />

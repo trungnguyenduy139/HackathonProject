@@ -24,4 +24,6 @@ object ConstHelper {
     const val APP_NAME = "app_name"
 
     const val SAVE_LIST_PATIENT = "save_list"
+
+    const val PARSER_ERROR = "parser_error"
 }

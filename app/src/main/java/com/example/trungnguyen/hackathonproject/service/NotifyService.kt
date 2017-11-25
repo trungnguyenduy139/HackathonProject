@@ -5,7 +5,7 @@ import android.content.Intent
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
-import com.example.trungnguyen.hackathonproject.receiver.TheReceiver
+import com.example.trungnguyen.hackathonproject.receiver.NotifyReceiver
 
 /**
  * Author : Trung Nguyen
@@ -26,7 +26,7 @@ class NotifyService : IntentService("NotifyService") {
     }
 
     private fun startStuff() {
-        val intent = Intent(this, TheReceiver::class.java)
+        val intent = Intent(this, NotifyReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 1200, 1200, pendingIntent)
