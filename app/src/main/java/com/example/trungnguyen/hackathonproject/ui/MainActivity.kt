@@ -14,7 +14,7 @@ import retrofit2.Response
 
 /**
  * Author : Trung Nguyen
- * Date : 11/23/2017
+ * Date : 11/25/2017
  */
 
 class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, ApiHelper.ApiCallback {

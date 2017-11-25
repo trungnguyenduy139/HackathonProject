@@ -4,7 +4,7 @@ import android.app.Application
 
 /**
  * Author : Trung Nguyen
- * Date : 11/23/2017
+ * Date : 11/25/2017
  */
 
 class App : Application() {

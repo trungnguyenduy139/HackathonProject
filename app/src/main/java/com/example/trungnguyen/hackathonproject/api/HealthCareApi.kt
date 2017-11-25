@@ -5,23 +5,22 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 /**
  * Author : Trung Nguyen
- * Date : 11/23/2017
+ * Date : 11/25/2017
  */
 class HealthCareApi {
 
     companion object {
         const val TEST_PATIENT_ID = "HK2"
-        private val URL = "http://54.201.74.103/Request_bn.php/"
-        private var impHealthCareApi: ImpHealthCareApi? = null
-        fun getService(): ImpHealthCareApi {
-            if (impHealthCareApi == null) {
+        private var mImpHealthCareApi: ImpHealthCareApi? = null
+        fun getService(url: String): ImpHealthCareApi {
+            if (mImpHealthCareApi == null) {
                 val retrofit = Retrofit.Builder()
-                        .baseUrl(URL)
+                        .baseUrl(url)
                         .addConverterFactory(GsonConverterFactory.create())
                         .build()
-                impHealthCareApi = retrofit.create(ImpHealthCareApi::class.java)
+                mImpHealthCareApi = retrofit.create(ImpHealthCareApi::class.java)
             }
-            return impHealthCareApi!!
+            return mImpHealthCareApi!!
         }
     }
 }

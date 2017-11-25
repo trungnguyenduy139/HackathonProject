@@ -1,0 +1,74 @@
+package com.example.trungnguyen.hackathonproject.helper
+
+import android.os.AsyncTask
+import android.util.Log
+
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+
+import java.io.IOException
+import java.util.HashMap
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.URL
+
+/**
+ * Author : Trung Nguyen
+ * Date : 11/25/2017
+ */
+class GetNearbyPlacesData : AsyncTask<Any, String, String>() {
+
+    private var mGooglePlacesData: String? = null
+    private var mMap: GoogleMap? = null
+
+    override fun doInBackground(vararg objects: Any): String {
+        mMap = objects[0] as GoogleMap
+        val dataBuilder = StringBuilder()
+        try {
+            val url = URL(objects[1] as String)
+            val reader = BufferedReader(InputStreamReader(url.openStream()))
+            var line: String
+            while (true) {
+                line = reader.readLine() ?: break
+                dataBuilder.append(line)
+            }
+            reader.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        mGooglePlacesData = dataBuilder.toString()
+        return mGooglePlacesData!!
+    }
+
+    override fun onPostExecute(s: String) {
+        val nearbyPlaceList: List<HashMap<String, String>>
+        val parser = DataParser()
+        nearbyPlaceList = parser.parse(s)
+        Log.d("nearbyplacesdata", "called parse method")
+        showNearbyPlaces(nearbyPlaceList)
+    }
+
+    private fun showNearbyPlaces(nearbyPlaceList: List<HashMap<String, String>>) {
+        for (i in nearbyPlaceList.indices) {
+            val markerOptions = MarkerOptions()
+            val googlePlace = nearbyPlaceList[i]
+
+            val placeName = googlePlace["place_name"]
+            val vicinity = googlePlace["vicinity"]
+            val lat = java.lang.Double.parseDouble(googlePlace["lat"])
+            val lng = java.lang.Double.parseDouble(googlePlace["lng"])
+
+            val latLng = LatLng(lat, lng)
+            markerOptions.position(latLng)
+            markerOptions.title(placeName + " : " + vicinity)
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+
+            mMap!!.addMarker(markerOptions)
+            mMap!!.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+            mMap!!.animateCamera(CameraUpdateFactory.zoomTo(10f))
+        }
+    }
+}
