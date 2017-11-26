@@ -39,8 +39,9 @@ class ApiHelper(apiCallback: ApiCallback) {
         })
     }
 
-    fun getDataByUserId() {
-        val patient = HealthCareApi.getService(RELATIVE_URL).getDataByClient()
+    fun getDataByUserId(url: String) {
+        val tempUrl = "?ID_RELATIVE=$url"
+        val patient = HealthCareApi.getService(RELATIVE_URL).getDataByClient(tempUrl)
         patient.enqueue(object : Callback<List<Patient>> {
             override fun onFailure(call: Call<List<Patient>>?, t: Throwable?) {
                 Log.v("ApiHelper", t?.message)

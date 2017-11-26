@@ -42,18 +42,20 @@ class GetNearbyTask : AsyncTask<Any, String, String>() {
         return mGooglePlacesData!!
     }
 
-    override fun onPostExecute(s: String) {
-        val nearbyPlaceList: List<HashMap<String, String>>
-        val parser = DataParser()
-        nearbyPlaceList = parser.parse(s)
-        if(nearbyPlaceList.isEmpty()) return
-        showNearbyPlaces(nearbyPlaceList)
+    override fun onPostExecute(json: String) {
+        try {
+            val nearbyPlaceList: List<HashMap<String, String>> = DataParser.parse(json)
+            if (nearbyPlaceList.isEmpty()) return
+            showNearbyPlaces(nearbyPlaceList)
+        } catch (ignored: Exception) {
+
+        }
     }
 
     private fun showNearbyPlaces(nearbyPlaceList: List<HashMap<String, String>>) {
-        for (i in nearbyPlaceList.indices) {
+        for (index in nearbyPlaceList.indices) {
             val markerOptions = MarkerOptions()
-            val googlePlace = nearbyPlaceList[i]
+            val googlePlace = nearbyPlaceList[index]
 
             val placeName = googlePlace["place_name"]
             val vicinity = googlePlace["vicinity"]

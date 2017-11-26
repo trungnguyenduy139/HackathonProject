@@ -11,7 +11,7 @@ import java.util.ArrayList
  * Author : Trung Nguyen
  * Date : 11/25/2017
  */
-class DataParser {
+object DataParser {
 
     private fun getPlace(googlePlaceJson: JSONObject): HashMap<String, String> {
         val googlePlaceMap = HashMap<String, String>()

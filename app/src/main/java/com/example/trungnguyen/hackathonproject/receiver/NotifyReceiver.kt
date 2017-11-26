@@ -19,7 +19,6 @@ import com.example.trungnguyen.hackathonproject.ui.PatientDialog
 import retrofit2.Call
 import retrofit2.Response
 
-
 /**
  * Author : Trung Nguyen
  * Date : 11/25/2017
@@ -32,6 +31,7 @@ class NotifyReceiver : BroadcastReceiver(), ApiHelper.ApiCallback {
     override fun onSuccess(call: Call<List<Patient>>?, response: Response<List<Patient>>?) {
         val data = response?.body()!!
         val resultBuilder = StringBuilder()
+        mWarningPatients.clear()
         data.forEach {
             if (it.state == "0") mWarningPatients.add(it.ID)
             resultBuilder.append(it.ID).append("\n")
@@ -46,12 +46,11 @@ class NotifyReceiver : BroadcastReceiver(), ApiHelper.ApiCallback {
 
     private val mApiHelper = ApiHelper(this)
 
-    override fun onReceive(context: Context?, p1: Intent?) {
+    override fun onReceive(context: Context?, intent: Intent?) {
         mContext = context
         UtilHelper.showToast("Success")
-        Log.d("Notification", "The Receiver Successful")
         try {
-            mApiHelper.getDataByUserId()
+            mApiHelper.getDataByUserId(intent?.getStringExtra("PUT_USER_ID")!!)
         } catch (ignored: Exception) {
         }
     }

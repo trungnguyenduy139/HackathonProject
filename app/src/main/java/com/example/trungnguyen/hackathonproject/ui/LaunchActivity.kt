@@ -124,6 +124,11 @@ class LaunchActivity : AppCompatActivity(), View.OnClickListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_add_patient -> buildAddPatientDialog()
+            R.id.menu_log_out -> {
+                PreferenceUtil.removeUserId(this)
+                startActivity(Intent(this, SignInActivity::class.java))
+                finish()
+            }
         }
         return false
     }

@@ -3,6 +3,7 @@ package com.example.trungnguyen.hackathonproject.helper
 import android.content.SharedPreferences
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 
 
 /**
@@ -30,13 +31,32 @@ class PreferenceUtil {
         fun saveLatestWarning(context: Context, list: ArrayList<String>) {
             val editor = getSharedPreferenceUtil(context).edit()
             val set = HashSet<String>(list)
+            Log.v("CHECKCHECK", set.size.toString())
             editor.putStringSet(ConstHelper.NEAR_WARNING, set)
             editor.apply()
         }
 
         fun getLatestWarning(context: Context): Set<String> {
             val preferences = getSharedPreferenceUtil(context)
+            Log.v("CHECKCHECK", preferences.getStringSet(ConstHelper.NEAR_WARNING, HashSet<String>()).size.toString())
             return preferences.getStringSet(ConstHelper.NEAR_WARNING, HashSet<String>())
+        }
+
+        fun saveUserId(context: Context, userId: String) {
+            val editor = getSharedPreferenceUtil(context).edit()
+            editor.putString("SAVE_ID", userId)
+            editor.apply()
+        }
+
+        fun removeUserId(context: Context) {
+            val editor = getSharedPreferenceUtil(context).edit()
+            editor.remove("SAVE_ID")
+            editor.apply()
+        }
+
+        fun getUserId(context: Context): String {
+            val preferences = getSharedPreferenceUtil(context)
+            return preferences.getString("SAVE_ID", "")
         }
     }
 }

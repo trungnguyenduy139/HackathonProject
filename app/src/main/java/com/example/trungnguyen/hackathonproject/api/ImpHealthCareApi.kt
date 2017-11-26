@@ -13,6 +13,6 @@ interface ImpHealthCareApi {
     @GET
     fun getData(@Url url: String): Call<List<Patient>>
 
-    @GET("?ID_RELATIVE=" + "F001")
-    fun getDataByClient(): Call<List<Patient>>
+    @GET
+    fun getDataByClient(@Url url: String): Call<List<Patient>>
 }
