@@ -30,4 +30,8 @@ object ConstHelper {
     const val IS_WARNING = "is_warning"
 
     const val NEAR_WARNING = "near_warning"
+
+    const val SAVE_ID = "save_id"
+
+    const val PUT_USER_ID = "put_user_id"
 }

@@ -50,7 +50,7 @@ class NotifyReceiver : BroadcastReceiver(), ApiHelper.ApiCallback {
         mContext = context
         UtilHelper.showToast("Success")
         try {
-            mApiHelper.getDataByUserId(intent?.getStringExtra("PUT_USER_ID")!!)
+            mApiHelper.getDataByUserId(intent?.getStringExtra(ConstHelper.PUT_USER_ID)!!)
         } catch (ignored: Exception) {
         }
     }
