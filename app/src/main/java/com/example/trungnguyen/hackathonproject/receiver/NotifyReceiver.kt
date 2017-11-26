@@ -7,7 +7,6 @@ import android.content.Intent
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.IntentFilter
-import android.util.Log
 import com.example.trungnguyen.hackathonproject.R
 import com.example.trungnguyen.hackathonproject.base.App
 import com.example.trungnguyen.hackathonproject.bean.Patient
